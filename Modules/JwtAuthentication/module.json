@@ -1,0 +1,13 @@
+{
+    "name": "JwtAuthentication",
+    "alias": "jwtauthentication",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\JwtAuthentication\\Providers\\JwtAuthenticationServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
