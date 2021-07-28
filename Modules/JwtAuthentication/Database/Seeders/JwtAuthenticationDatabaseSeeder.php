@@ -4,6 +4,9 @@ namespace Modules\JwtAuthentication\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
+use Modules\JwtAuthentication\Entities\User;
+use Faker;
 
 class JwtAuthenticationDatabaseSeeder extends Seeder
 {
@@ -14,8 +17,17 @@ class JwtAuthenticationDatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $faker = Faker\Factory::create();
         Model::unguard();
 
-        // $this->call("OthersTableSeeder");
+        for ($i = 1; $i < 20; $i++) {
+            User::create( [
+                'name' => $faker->name,
+                'email' => $faker->email,
+                'password' => Hash::make('123456'),
+                'active' => true,
+                'activation_token' => '',
+            ]);
+        }
     }
 }

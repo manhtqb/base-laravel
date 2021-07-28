@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Modules\JwtAuthentication\Entities\User;
 use Modules\JwtAuthentication\Notifications\SignupActivate;
 use Modules\JwtAuthentication\Services\UserServiceInterface;
 
@@ -29,7 +31,7 @@ class AuthController extends Controller
         $user = $this->service->createUser([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => Hash::make($request->password),
             'activation_token' => Str::random(60)
         ]);
 
@@ -51,12 +53,17 @@ class AuthController extends Controller
         $credentials = request(['email', 'password']);
         $credentials['active'] = 1;
         $credentials['deleted_at'] = null;
-
-        if(!Auth::attempt($credentials))
+        $user = User::where('email', $credentials['email'])->first();
+        if (!$user) {
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => 'User not found'
             ], 401);
-        $user = $request->user();
+        }
+        if(!Hash::check($credentials['password'], $user->password)) {
+            return response()->json([
+                'message' => 'Password not match'
+            ], 401);
+        }
 
         $tokenResult = $user->createToken('Personal Access Token');
         $token = $tokenResult->token;
